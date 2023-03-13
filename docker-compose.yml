@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  clean-architecture-php:
+    build: ./config/docker/php
+    container_name: clean-architecture-php
+    entrypoint: dockerize -wait tcp://clean-architecture-database:3306 -timeout 60s ./config/docker/php/entrypoint.sh
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./config/docker/php/jit.ini:/usr/local/etc/php/conf.d/jit.ini
+      - ./config/docker/php/timezone.ini:/usr/local/etc/php/conf.d/timezone.ini
+    depends_on:
+      - clean-architecture-database
+      - clean-architecture-mongo-db
+  clean-architecture-mongo-db:
+    container_name: clean-architecture-mongo-db
+    image: mvertes/alpine-mongo
+    restart: always
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "${MONGO_DB_PORT}:27017"
+  clean-architecture-database:
+    image: mysql:8.0.31
+    container_name: clean-architecture-database
+    command: --default-authentication-plugin=mysql_native_password --sort_buffer_size=512K
+    restart: always
+    ports:
+      - "${DB_PORT}:3306"
+    environment:
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+    volumes:
+      - database_data:/var/lib/mysql
+  clean-architecture-webserver:
+    image: nginx:alpine
+    container_name: clean-architecture-webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "${NGINX_PORT}:80"
+    volumes:
+      - ./:/var/www/html
+      - ./config/docker/nginx/conf.d/:/etc/nginx/conf.d/
+    depends_on:
+      - clean-architecture-php
+
+volumes:
+  database_data:
+  mongodb_data:
