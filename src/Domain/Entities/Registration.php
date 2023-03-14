@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\Domain\Entities;
 
+use App\Domain\ValueObjects\Cpf;
+use App\Domain\ValueObjects\Email;
+
 final class Registration
 {
     private string $name;
-    private string $mail;
+    private Email $email;
     private string $cpf;
     private \DateTimeInterface $birthDate;
-    private string $registrationNumber;
+    private Cpf $registrationNumber;
     private \DateTimeInterface $registrationAt;
 
     /**
@@ -32,20 +35,20 @@ final class Registration
     }
 
     /**
-     * @return string
+     * @return Email
      */
-    public function getMail(): string
+    public function getEmail(): Email
     {
-        return $this->mail;
+        return $this->email;
     }
 
     /**
-     * @param string $mail
+     * @param Email $email
      * @return Registration
      */
-    public function setMail(string $mail): Registration
+    public function setEmail(Email $email): Registration
     {
-        $this->mail = $mail;
+        $this->email = $email;
         return $this;
     }
 
@@ -86,18 +89,18 @@ final class Registration
     }
 
     /**
-     * @return string
+     * @return Cpf
      */
-    public function getRegistrationNumber(): string
+    public function getRegistrationNumber(): Cpf
     {
         return $this->registrationNumber;
     }
 
     /**
-     * @param string $registrationNumber
+     * @param Cpf $registrationNumber
      * @return Registration
      */
-    public function setRegistrationNumber(string $registrationNumber): Registration
+    public function setRegistrationNumber(Cpf $registrationNumber): Registration
     {
         $this->registrationNumber = $registrationNumber;
         return $this;
